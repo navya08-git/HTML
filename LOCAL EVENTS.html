@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Local Community Event Portal</title>
+  <style>
+    /* Internal CSS */
+    #welcomeBanner {
+      background-color: blue;
+      color: white;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: green;
+    }
+
+    .event-image {
+      border: 2px solid #ccc;
+      padding: 5px;
+    }
+
+    form {
+      margin: 20px 0;
+    }
+
+    video {
+      display: block;
+      margin-top: 20px;
+    }
+  </style>
+  <script>
+    // Saving user preferences
+    window.onload = () => {
+      const savedType = localStorage.getItem("eventType");
+      if (savedType) {
+        document.getElementById("eventType").value = savedType;
+      }
+    };
+
+    function savePreference() {
+      const selected = document.getElementById("eventType").value;
+      localStorage.setItem("eventType", selected);
+    }
+
+    function clearPreferences() {
+      localStorage.clear();
+      sessionStorage.clear();
+    }
+
+    function validatePhone(input) {
+      const pattern = /^\d{10}$/;
+      if (!pattern.test(input.value)) {
+        alert("Please enter a 10-digit phone number.");
+      }
+    }
+
+    function showFee() {
+      const feeMap = {
+        "concert": "$10",
+        "workshop": "$5",
+        "meeting": "Free"
+      };
+      const event = document.getElementById("eventType").value;
+      document.getElementById("fee").textContent = `Fee: ${feeMap[event] || "N/A"}`;
+    }
+
+    function showConfirmation() {
+      document.getElementById("confirmation").value = "Form Submitted Successfully!";
+    }
+
+    function enlargeImage(img) {
+      img.style.width = "400px";
+    }
+
+    function countChars(textarea) {
+      document.getElementById("charCount").textContent = `Characters: ${textarea.value.length}`;
+    }
+
+    function videoReady() {
+      document.getElementById("videoStatus").textContent = "Video ready to play!";
+    }
+
+    window.onbeforeunload = function () {
+      return "You have unsaved changes. Are you sure you want to leave?";
+    };
+
+    function findLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            document.getElementById("location").textContent =
+              `Lat: ${position.coords.latitude}, Lon: ${position.coords.longitude}`;
+          },
+          (error) => {
+            document.getElementById("location").textContent = `Error: ${error.message}`;
+          },
+          { enableHighAccuracy: true, timeout: 5000 }
+        );
+      } else {
+        document.getElementById("location").textContent = "Geolocation not supported.";
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#home">Home</a> |
+    <a href="#events">Events</a> |
+    <a href="#contact">Contact</a> |
+    <a href="help.html" target="_blank">Help</a>
+  </nav>
+
+  <!-- Main -->
+  <main>
+    <section id="home">
+      <div id="welcomeBanner">
+        Welcome to the Local Community Portal! 
+        <span style="color:red;font-weight:bold;">Special offer today!</span>
+      </div>
+    </section>
+
+    <section id="events">
+      <h2 class="highlight">Upcoming Community Events</h2>
+
+      <!-- Image Gallery -->
+      <table>
+        <caption></caption> Event Highlights</caption>
+        <tr>
+          <td><img src="concert.jpg" alt="concert" title="concert" class="event-image" ondblclick="enlargeImage(this)" width="150"></td>
+          <td><img src="diwali.jpg" alt="diwali" title="diwali" class="event-image" ondblclick="enlargeImage(this)" width="150"></td>
+          <td><img src="scene.jpg" alt="scene" title="scene" class="event-image" ondblclick="enlargeImage(this)" width="150"></td>
+        </tr>
+        <tr>
+          <td><img src="japan.jpg" alt="japan" title="japan" class="event-image" ondblclick="enlargeImage(this)" width="150"></td>
+          <td><img src="sunset.jpg" alt="sunset" title="sunset" class="event-image" ondblclick="enlargeImage(this)" width="150"></td>
+          <td><img src="festival.jpg" alt="festival" title="festival" class="event-image" ondblclick="enlargeImage(this)" width="150"></td>
+        </tr>
+      </table>
+
+      <!-- Registration Form -->
+      <h3>Register for an Event</h3>
+      <form onsubmit="showConfirmation(); return false;">
+        Name: <input type="text" name="name" placeholder="Enter your name" required autofocus><br><br>
+        Email: <input type="email" name="email" placeholder="Enter your email" required><br><br>
+        Date: <input type="date" name="date" required><br><br>
+        Event Type: 
+        <select id="eventType" onchange="showFee(); savePreference();">
+          <option value="">Select</option>
+          <option value="concert">Concert</option>
+          <option value="workshop">Workshop</option>
+          <option value="meeting">Meeting</option>
+        </select>
+        <span id="fee"></span>
+        <br><br>
+        Phone: <input type="text" onblur="validatePhone(this)" placeholder="10-digit number"><br><br>
+        Message:<br>
+        <textarea onkeyup="countChars(this)"></textarea><br>
+        <span id="charCount"></span><br><br>
+        <button type="submit">Submit</button>
+        <output id="confirmation"></output>
+      </form>
+
+      <button onclick="clearPreferences()">Clear Preferences</button>
+    </section>
+
+    <!-- Video -->
+    <section>
+      <h3>Event Promo Video</h3>
+      <video width="320" controls oncanplay="videoReady()">
+        <source src="event.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <div id="videoStatus"></div>
+    </section>
+
+    <!-- Geolocation -->
+    <section>
+      <h3>Find Events Near You</h3>
+      <button onclick="findLocation()">Find Nearby Events</button>
+      <p id="location"></p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p class="highlight">Contact us at community@localportal.com</p>
+  </footer>
+
+</body>
+</html>
